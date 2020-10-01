@@ -4,7 +4,7 @@ wss = new WebSocketServer({port: 40510})
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
-    console.log(`Received ${message}`);
+    console.log(`Received: ${message}`);
 
     message = JSON.parse(message);
 
@@ -16,7 +16,7 @@ wss.on('connection', function connection(ws) {
     wss.clients.forEach(function each(client) {
       if (client != ws) {
         client.send(JSON.stringify({
-          name: ws.personName,
+          username: ws.personName,
           data: message.data
         }));
       }
@@ -25,6 +25,6 @@ wss.on('connection', function connection(ws) {
   });
     
   ws.on('close', () => {
-    console.log("Client disconnected.");
+    console.log(`Client disconnected.`);
   });
 });

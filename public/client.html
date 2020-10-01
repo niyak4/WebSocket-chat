@@ -7,31 +7,34 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="messagesBox"></div>
+    <h1 class="welcomeMsg">Welcome to my Chat! Input your username below and get started.</h1>
     <input type="text" id="username" placeholder="Username">
-    <input type="text" id="message" placeholder="Type your message here.">
-    <button id="sendBtn">Send!</button>
+    <div id="containerMsg">
+        <div id="messagesBox"></div>
+        <div id="sendMessage">
+            <input type="text" id="message" placeholder="Type your message here.">
+            <button id="sendBtn">Send!</button>
+        </div>
+    </div>
     <script>
-
-        let username = prompt("What is your name?");
         const ws = new WebSocket('ws://localhost:40510');
         let box = document.getElementById('messagesBox');
-        //let username = document.getElementById('username');
 
         ws.onopen = function () {
             console.log('Welcome!');
+            let username = document.getElementById('username').value;
             // sending a send event to websocket server
-            ws.send(JSON.stringify({
+            /*ws.send(JSON.stringify({
                 type: "username",
                 data: username
-            }));
+            }));*/
         }
         // event emmited when receiving message 
         ws.onmessage = function (event) {
             console.log(event);
             let msg = JSON.parse(event.data);
 
-            box.innerHTML += `${msg.name}: ${msg.data}<br>`;
+            box.innerHTML += `${msg.username}: ${msg.data}<br>`;
         }
 
         ws.onerror = function (err) {
@@ -39,17 +42,29 @@
         }
 
         ws.onclose = function () {
-            ws.send('User disconnected.');
+            ws.send(`User disconnected.`);
         }
         
-        document.querySelector('button').onclick = function() {
-            let msg = document.getElementById('message').value;
-            //ws.send(msg);
+        document.getElementById('sendBtn').onclick = function() {
+            let username = document.getElementById('username').value;
+            let message = document.getElementById('message').value;
+
             ws.send(JSON.stringify({
-                type: "message",
-                data: msg
+                type: "username",
+                data: username
             }));
-            box.innerHTML += `You: ${msg}<br>`;
+
+            if(document.getElementById('username').value) {
+                ws.send(JSON.stringify({
+                    type: "message",
+                    data: message
+                }));
+
+                box.innerHTML += `You: ${message}<br>`;
+                document.getElementById('message').value = '';
+            } else {
+                alert('Input username');
+            }
         }
     </script>
 </body>
