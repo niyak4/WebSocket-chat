@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="messagesBox"></div>
+    <input type="text" id="username" placeholder="Username">
+    <input type="text" id="message" placeholder="Type your message here.">
+    <button id="sendBtn">Send!</button>
+    <script>
+
+        let username = prompt("What is your name?");
+        const ws = new WebSocket('ws://localhost:40510');
+        let box = document.getElementById('messagesBox');
+        //let username = document.getElementById('username');
+
+        ws.onopen = function () {
+            console.log('Welcome!');
+            // sending a send event to websocket server
+            ws.send(JSON.stringify({
+                type: "username",
+                data: username
+            }));
+        }
+        // event emmited when receiving message 
+        ws.onmessage = function (event) {
+            console.log(event);
+            let msg = JSON.parse(event.data);
+
+            box.innerHTML += `${msg.name}: ${msg.data}<br>`;
+        }
+
+        ws.onerror = function (err) {
+            console.error(err);
+        }
+
+        ws.onclose = function () {
+            ws.send('User disconnected.');
+        }
+        
+        document.querySelector('button').onclick = function() {
+            let msg = document.getElementById('message').value;
+            //ws.send(msg);
+            ws.send(JSON.stringify({
+                type: "message",
+                data: msg
+            }));
+            box.innerHTML += `You: ${msg}<br>`;
+        }
+    </script>
+</body>
+</html>

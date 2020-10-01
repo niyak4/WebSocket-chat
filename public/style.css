@@ -1,0 +1,35 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(212, 212, 212);
+}
+
+#messagesBox {
+    background-color: #fff;
+    border-width: 30px;
+    border-radius: 10px;
+    border-color: black;
+    width: 75%;
+    height: 30em;
+    margin: auto;
+    
+}
+
+#message {
+    display: block;
+    width: 15%;
+    height: 60px;
+    margin: auto;
+}
+
+#username {
+    display: block;
+    width: 100px;
+    height: 30px;
+    margin: auto;
+}
+
+#sendBtn {
+    display: block;
+    margin: auto;
+}
