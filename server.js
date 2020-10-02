@@ -1,16 +1,73 @@
 const express = require('express');
-const ws = require('./ws');
+const WebSocketServer = require('ws').Server;
+const fs = require('fs');
 
 const PORT = process.env.PORT || 3000;
 
-let app = express();
+const server = express()
+   //.use(express.static('public'));
+   .use((req, res) => res.sendFile('./public/client.html', { root: __dirname }))
+   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-app.use(express.static('public'));
+const wss = new WebSocketServer({ server: server });
 
-app.get('/', function (req, res) {
-   res.sendFile(__dirname + '/public/client.html');
-});
+const date = new Date().getHours();
 
-app.listen(3000, function () {
-   console.log(`Server listening on port ${PORT}!`)
+fs.appendFile(__dirname + `/log-${date}.txt`, `Log started in ${date}`, function(err) {
+  if (err) return console.log(err);
+
+  console.log("Log File created.");
+}); 
+
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(message) {
+    console.log(`Received: ${message}`);
+
+    message = JSON.parse(message);
+
+    if (message.type == "username") {
+      ws.personName = message.data;
+      return ;
+    }
+
+    if (message.data == "User connected.") {
+      wss.clients.forEach(function each(client) {
+        if (client != ws) {
+          client.send(JSON.stringify({
+            username: 'Server',
+            data: message.data
+          }));
+        }
+      });
+      return ;
+    }
+
+    if (message.data == "User disconnected.") {
+      wss.clients.forEach(function each(client) {
+        if (client != ws) {
+          client.send(JSON.stringify({
+            username: 'Server',
+            data: message.data
+          }));
+        }
+      });
+      return ;
+    }
+
+    wss.clients.forEach(function each(client) {
+      if (client != ws) {
+        client.send(JSON.stringify({
+          username: ws.personName,
+          data: message.data
+        }));
+      }
+
+      fs.appendFile(`log-${date}.txt`, '\n' + `Username: ${ws.personName} - Message: ${message.data}`, (error) => {
+        if (error) throw error;
+      });
+    });
+  });
+  ws.on('close', () => {
+    console.log(`${ws.personName} disconnected.`);
+  });
 });

@@ -4,30 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
-    <link rel="stylesheet" href="style.css">
+    <!--..<link rel="stylesheet" href="./style.css">-->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1abc9c;
+        }
+
+        h1.welcomeMsg {
+            position: relative;
+            text-align: center;
+        }
+
+        #username {
+            display: block;
+            width: 100px;
+            height: 30px;
+            margin: 10px auto;
+        }
+
+        #containerMsg {
+            width: 60%;
+            margin: 0 auto;
+            padding: 10;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        #messagesBox {
+            background-color: #fff;
+            height: 30em;
+            padding: 10px;
+            overflow: auto;
+            border-radius: 10px;
+        }
+
+        #sendMessage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        #message {
+            display: inline;
+            margin: 0;
+            padding: 0 5px;
+            border: none;
+            border-bottom: 1px solid #57606f;
+            width: 100%;
+            height: 40px;
+            transition: 0.3s;
+        }
+
+        #message:active {
+            border-bottom: 1px solid #2f3542;
+            outline: 0;
+            outline-offset: 0;
+        }
+
+        #message:hover {
+            border-bottom: 1px solid #747d8c;
+            outline: 0;
+            outline-offset: 0;
+        } 
+
+        #message:focus {
+            border-bottom: 1px solid #2f3542;
+            outline: 0;
+            outline-offset: 0;
+        }
+
+        #sendBtn {
+            padding: 10px 0;
+            margin: 0;
+            width: 70px;
+            color: black;
+            text-decoration: none;
+            transition: 0.3s;
+            font-weight: 700;
+            border: none;
+        }
+
+        #sendBtn:hover { 
+            color: white;
+            background: #00b894; 
+            border: 2px;
+            border-color: black;
+            border-radius: 3px;
+        }
+
+        #sendBtn:active {
+            border: 2px;
+            border-color: black;
+            border-radius: 3px;
+            background-color: #079992;
+        }
+
+        #sendBtn:focus {
+            outline: 0;
+            outline-offset: 0;
+        }
+    </style>
 </head>
 <body>
     <h1 class="welcomeMsg">Welcome to my Chat! Input your username below and get started.</h1>
-    <input type="text" id="username" placeholder="Username">
+    <input type="text" id="username" placeholder="Username" autocomplete="off">
     <div id="containerMsg">
-        <div id="messagesBox"></div>
+        <div id="messagesBox"></div> 
         <div id="sendMessage">
-            <input type="text" id="message" placeholder="Type your message here.">
+            <input type="text" id="message" placeholder="Type your message here." autocomplete="off">
             <button id="sendBtn">Send!</button>
         </div>
-    </div>
+    </div>>
     <script>
-        const ws = new WebSocket('ws://localhost:40510');
+        const HOST = location.origin.replace(/^http/, 'ws')
+        const ws = new WebSocket(HOST);
+
         let box = document.getElementById('messagesBox');
 
         ws.onopen = function () {
             console.log('Welcome!');
-            let username = document.getElementById('username').value;
+
             // sending a send event to websocket server
-            /*ws.send(JSON.stringify({
-                type: "username",
-                data: username
-            }));*/
+            ws.send(JSON.stringify({
+                type: "message",
+                data: "User connected."
+            }));
         }
         // event emmited when receiving message 
         ws.onmessage = function (event) {
@@ -42,19 +146,25 @@
         }
 
         ws.onclose = function () {
-            ws.send(`User disconnected.`);
+            
+            ws.send(JSON.stringify({
+                type: "message",
+                data: "User disconnected."
+            }));
         }
-        
-        document.getElementById('sendBtn').onclick = function() {
+
+        function sendMessage() {
             let username = document.getElementById('username').value;
             let message = document.getElementById('message').value;
+
+            if (message === '') return;
 
             ws.send(JSON.stringify({
                 type: "username",
                 data: username
             }));
 
-            if(document.getElementById('username').value) {
+            if(username && message) {
                 ws.send(JSON.stringify({
                     type: "message",
                     data: message
@@ -62,10 +172,19 @@
 
                 box.innerHTML += `You: ${message}<br>`;
                 document.getElementById('message').value = '';
+            } else if (message == '') {
+                return ;
             } else {
                 alert('Input username');
             }
         }
+
+        document.getElementById('message').onkeydown = (key) => {
+            if (key.keyCode === 13 ) sendMessage();
+        }
+
+        document.getElementById('sendBtn').onclick = sendMessage;
+
     </script>
 </body>
 </html>
