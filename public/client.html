@@ -36,8 +36,11 @@
             background-color: #fff;
             height: 30em;
             padding: 10px;
-            overflow: auto;
             border-radius: 10px;
+            display: flex;
+            flex-flow: row wrap;
+            align-items: flex-end;
+            overflow-y: auto;
         }
 
         #sendMessage {
@@ -48,7 +51,6 @@
         }
 
         #message {
-            display: inline;
             margin: 0;
             padding: 0 5px;
             border: none;
@@ -120,13 +122,13 @@
     </div>>
     <script>
         const HOST = location.origin.replace(/^http/, 'ws')
+        console.log(location.origin);
         const ws = new WebSocket(HOST);
 
         let box = document.getElementById('messagesBox');
 
         ws.onopen = function () {
             console.log('Welcome!');
-
             // sending a send event to websocket server
             ws.send(JSON.stringify({
                 type: "message",
@@ -146,7 +148,6 @@
         }
 
         ws.onclose = function () {
-            
             ws.send(JSON.stringify({
                 type: "message",
                 data: "User disconnected."
@@ -154,8 +155,9 @@
         }
 
         function sendMessage() {
-            let username = document.getElementById('username').value;
-            let message = document.getElementById('message').value;
+            const username = document.getElementById('username').value;
+            const message = document.getElementById('message').value;
+            const messagesBox = document.getElementById('messagesBox');
 
             if (message === '') return;
 
@@ -172,6 +174,7 @@
 
                 box.innerHTML += `You: ${message}<br>`;
                 document.getElementById('message').value = '';
+                messagesBox.scrollTop = messagesBox.scrollHeight;
             } else if (message == '') {
                 return ;
             } else {
@@ -184,7 +187,6 @@
         }
 
         document.getElementById('sendBtn').onclick = sendMessage;
-
     </script>
 </body>
 </html>

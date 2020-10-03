@@ -1,19 +1,33 @@
 const express = require('express');
+const http = require('http');
 const WebSocketServer = require('ws').Server;
 const fs = require('fs');
 
 const PORT = process.env.PORT || 3000;
 
-const server = express()
-   //.use(express.static('public'));
-   .use((req, res) => res.sendFile('./public/client.html', { root: __dirname }))
-   .listen(PORT, () => console.log(`Listening on ${PORT}`));
+const app = express();
+
+const server = http.Server(app);
+
+server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+
+app.get('/', (req, res) => {
+  res.end('Welcome page.');
+});
+
+app.get('/login', (req, res) => {
+  res.end('Login page.');
+});
+  
+app.get('/chat', (req, res) => {
+  res.sendFile('./public/client.html', { root: __dirname });
+});
 
 const wss = new WebSocketServer({ server: server });
 
 const date = new Date().getHours();
 
-fs.appendFile(__dirname + `/log-${date}.txt`, `Log started in ${date}`, function(err) {
+fs.appendFile(__dirname + `/log-${date}.txt`, `Log started in ${date}\n`, function(err) {
   if (err) return console.log(err);
 
   console.log("Log File created.");
@@ -60,14 +74,18 @@ wss.on('connection', function connection(ws) {
           username: ws.personName,
           data: message.data
         }));
-      }
 
-      fs.appendFile(`log-${date}.txt`, '\n' + `Username: ${ws.personName} - Message: ${message.data}`, (error) => {
-        if (error) throw error;
-      });
+        fs.appendFile(`log-${date}.txt`, `Username: ${ws.personName} - Message: ${message.data}\n`, (error) => {
+          if (error) throw error;
+        });
+      }
     });
   });
   ws.on('close', () => {
     console.log(`${ws.personName} disconnected.`);
+
+    fs.appendFile(`log-${date}.txt`, `User '${ws.personName}' disconnected.\n`, (error) => {
+      if (error) throw error;
+    });
   });
 });
