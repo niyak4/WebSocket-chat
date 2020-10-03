@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const WebSocketServer = require('ws').Server;
 const fs = require('fs');
+//const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 
@@ -11,12 +12,14 @@ const server = http.Server(app);
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
+app.use(express.static('./public/'));
+
 app.get('/', (req, res) => {
   res.end('Welcome page.');
 });
 
 app.get('/login', (req, res) => {
-  res.end('Login page.');
+  res.sendFile('./public/login.html', { root: __dirname });
 });
   
 app.get('/chat', (req, res) => {

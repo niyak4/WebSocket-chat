@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1abc9c;
+}
+
+h1.welcomeMsg {
+    position: relative;
+    text-align: center;
+}
+
+#username {
+    display: block;
+    width: 100px;
+    height: 30px;
+    margin: 10px auto;
+}
+
+#containerMsg {
+    width: 60%;
+    margin: 0 auto;
+    padding: 10;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+#messagesBox {
+    background-color: #fff;
+    height: 30em;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: flex-end;
+    overflow-y: auto;
+}
+
+#sendMessage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+#message {
+    margin: 0;
+    padding: 0 5px;
+    border: none;
+    border-bottom: 1px solid #57606f;
+    width: 100%;
+    height: 40px;
+    transition: 0.3s;
+}
+
+#message:active {
+    border-bottom: 1px solid #2f3542;
+    outline: 0;
+    outline-offset: 0;
+}
+
+#message:hover {
+    border-bottom: 1px solid #747d8c;
+    outline: 0;
+    outline-offset: 0;
+} 
+
+#message:focus {
+    border-bottom: 1px solid #2f3542;
+    outline: 0;
+    outline-offset: 0;
+}
+
+#sendBtn {
+    padding: 10px 0;
+    margin: 0;
+    width: 70px;
+    color: black;
+    text-decoration: none;
+    transition: 0.3s;
+    font-weight: 700;
+    border: none;
+}
+
+#sendBtn:hover { 
+    color: white;
+    background: #00b894; 
+    border: 2px;
+    border-color: black;
+    border-radius: 3px;
+}
+
+#sendBtn:active {
+    border: 2px;
+    border-color: black;
+    border-radius: 3px;
+    background-color: #079992;
+}
+
+#sendBtn:focus {
+    outline: 0;
+    outline-offset: 0;
+}
