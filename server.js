@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http');
 const WebSocketServer = require('ws').Server;
 const fs = require('fs');
-//const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 
@@ -20,6 +19,10 @@ app.get('/', (req, res) => {
 
 app.get('/login', (req, res) => {
   res.sendFile('./public/login.html', { root: __dirname });
+});
+
+app.post('/login', (req, res) => {
+  res.redirect('../chat');
 });
   
 app.get('/chat', (req, res) => {
